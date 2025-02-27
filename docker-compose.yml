@@ -1,0 +1,100 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: npm run start:dev api-gateway
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nats
+      - users-service
+      - products-service
+      - orders-service
+    environment:
+      - NATS_URI=nats://nats:4222
+
+  users-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: npm run start:dev users-service
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nats
+      - mongodb-users
+    environment:
+      - MONGODB_URI=mongodb://mongodb-users:27017/users
+      - NATS_URI=nats://nats:4222
+
+  products-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: npm run start:dev products-service
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nats
+      - mongodb-products
+    environment:
+      - MONGODB_URI=mongodb://mongodb-products:27017/products
+      - NATS_URI=nats://nats:4222
+
+  orders-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: npm run start:dev orders-service
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nats
+      - mongodb-orders
+    environment:
+      - MONGODB_URI=mongodb://mongodb-orders:27017/orders
+      - NATS_URI=nats://nats:4222
+
+  nats:
+    image: nats:2.9.15-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: "--jetstream"
+
+  mongodb-users:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-users-data:/data/db
+
+  mongodb-products:
+    image: mongo:6.0
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-products-data:/data/db
+
+  mongodb-orders:
+    image: mongo:6.0
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongodb-orders-data:/data/db
+
+volumes:
+  mongodb-users-data:
+  mongodb-products-data:
+  mongodb-orders-data:
