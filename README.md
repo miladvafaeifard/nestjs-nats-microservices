@@ -12,6 +12,14 @@ This project demonstrates a microservices architecture using NestJS, Nats for me
 - **Message Broker**: Nats for inter-service communication
 - **Databases**: Each microservice has its own MongoDB instance
 
+
+## Install Docker and Colima
+Note: Podman is still an issue on macOS, so I decided to use docker (not desktop) with Colima
+
+- brew install docker docker-compose colima
+- colima start will create a VM on MacOS on which docker can then run out of the box.
+
+
 ## Running the Application
 
 ```bash
